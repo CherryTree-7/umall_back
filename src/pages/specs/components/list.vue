@@ -22,7 +22,7 @@
     </el-table-column>
     <el-table-column prop="date" label="操作" width="200">
       <template slot-scope="scope">
-        <el-button type="primary">编 辑</el-button>
+        <el-button type="primary" @click="edit(scope.row.id)">编 辑</el-button>
         <el-button type="danger" @click="del(scope.row.id)">删 除</el-button>
       </template>
     </el-table-column>
@@ -60,6 +60,9 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    edit(id){
+      this.$emit("edit",id)
     },
     ...mapActions({
       reqList: "specs/reqList",

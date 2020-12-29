@@ -1,7 +1,5 @@
 <template>
   <el-dialog :title="info.isadd ? '添加' : '编辑'" :visible.sync="info.isshow">
-    <div>user:{{ user }}</div>
-    <div>attrsArr:{{ attrsArr }}</div>
     <el-form :model="user">
       <el-form-item label="规格名称" :label-width="formLabelWidth">
         <el-input v-model="user.specsname"></el-input>
@@ -30,17 +28,16 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      
       <el-button type="primary" @click="add" v-if="info.isadd">添 加</el-button>
-      <el-button type="primary" v-else>修 改</el-button>
+      <el-button type="primary" v-else @click="update">修 改</el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </el-dialog>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 import { successAlert } from "../../../utils/alert";
-import { reqSpecsAdd } from "../../../utils/http";
+import { reqSpeceEdit, reqSpecsAdd, reqSpecsInfo } from "../../../utils/http";
 export default {
   props: ["info"],
   data() {
@@ -56,7 +53,7 @@ export default {
   },
   methods: {
     ...mapActions({
-        reqList:"specs/reqList"
+      reqList: "specs/reqList",
     }),
     cancel() {
       this.info.isshow = false;
@@ -83,7 +80,27 @@ export default {
           successAlert(res.data.msg);
           this.cancel();
           this.empty();
-          this.reqList()
+          this.reqList();
+        }
+      });
+    },
+    getOne(id) {
+      reqSpecsInfo({ id: id }).then((res) => {
+        if (res.data.code == 200) {
+          this.user = res.data.list[0];
+          this.user.attrs = JSON.parse(this.user.attrs);
+          this.attrsArr = this.user.attrs.map((item) => ({ value: item }));
+        }
+      });
+    },
+    update() {
+      this.user.attrs = JSON.stringify(this.attrsArr.map(item=>item.value))
+      reqSpeceEdit(this.user).then((res) => {
+        if (res.data.code == 200) {
+          successAlert(res.data.msg);
+          this.cancel();
+          this.empty();
+          this.reqList();
         }
       });
     },
