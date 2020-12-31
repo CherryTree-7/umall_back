@@ -26,7 +26,6 @@
           </el-switch>
         </el-form-item>
       </el-form>
-      {{user}}
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>

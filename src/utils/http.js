@@ -230,24 +230,88 @@ export const reqSpecsInfo = (id) => {
 export const reqSpeceEdit = (user) => {
     return axios({
         url: baseUrl + "/api/specsedit",
-        method:"post",
-        data:qs.stringify(user)
+        method: "post",
+        data: qs.stringify(user)
     })
 }
 //商品规格删除
-export const reqSpeceDel = (id) =>{
+export const reqSpeceDel = (id) => {
     return axios({
-        url:baseUrl+"/api/specsdelete",
-        method:"post",
-        data:qs.stringify(id)
+        url: baseUrl + "/api/specsdelete",
+        method: "post",
+        data: qs.stringify(id)
     })
 }
 
 //总数
-export let reqSpecsCount=()=>{
+export let reqSpecsCount = () => {
     return axios({
-        url:baseUrl+"/api/specscount"
+        url: baseUrl + "/api/specscount"
     })
 }
 
 /************商品规格管理 end**************************/
+/**********************会员管理Start**************************/
+// 会员列表
+export const reqMemberList = () => {
+    return axios({
+        url: baseUrl + "/api/memberlist",
+        method: "get"
+    })
+}
+// 会员获取一条
+export const reqMemberInfo = (uid) => {
+    return axios({
+        url: baseUrl + "/api/memberinfo",
+        method: "get",
+        params: uid
+    })
+}
+//会员修改
+export const reqMemberEdit = (user) => {
+    return axios({
+        url: baseUrl + "/api/memberedit",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
+//<-------------------------------banner轮播图管理 Start------------------------------------>
+//banner添加
+export const reqBannerAdd = (user) => {
+    return axios({
+        url: baseUrl + "/api/banneradd",
+        method: "post",
+        data: dataToFormData(user)
+    })
+}
+//banner列表
+export const reqBannerList = () => {
+    return axios({
+        url: baseUrl + "/api/bannerlist",
+    })
+}
+//banner轮播图获取（一条）
+export const reqBannerInfo = (id) => {
+    return axios({
+        url: baseUrl + "/api/bannerinfo",
+        method: "get",
+        params: id
+    })
+}
+//轮播图修改
+export const reqBannerEdit = (user) => {
+    return axios({
+        url: baseUrl + "/api/banneredit",
+        method: "post",
+        data: dataToFormData(user)
+    })
+}
+//轮播图删除
+export const reqBannerDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/bannerdelete",
+        method: "post",
+        data: qs.stringify(id)
+    })
+}
+//<-------------------------------banner轮播图管理 End-------------------------------------->
