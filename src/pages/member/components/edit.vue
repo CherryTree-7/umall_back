@@ -56,16 +56,31 @@ export default {
       });
     },
     update() {
-      if (this.user.password != "") {
-        reqMemberEdit(this.user).then((res) => {
-          if (res.data.code == 200) {
-            this.cancel(), successAlert(res.data.msg);
-            this.reqList();
-          }
-        });
-      }else{
-        errorAlert("密码不能为空")
+      //验证member
+      if (this.user.nickname === "") {
+        errorAlert("昵称不能为空");
+        return;
       }
+
+      if (this.user.phone === "") {
+        errorAlert("手机号不能为空");
+        return;
+      } else if (!/^1[3456789]\d{9}$/.test(this.user.phone)) {
+        errorAlert("请填写正确的手机号");
+        return
+      }
+
+      if (this.user.password === "") {
+        errorAlert("密码不能为空");
+        return;
+      }
+
+      reqMemberEdit(this.user).then((res) => {
+        if (res.data.code == 200) {
+          this.cancel(), successAlert(res.data.msg);
+          this.reqList();
+        }
+      });
     },
   },
 };

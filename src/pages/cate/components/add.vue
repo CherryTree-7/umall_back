@@ -49,7 +49,9 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="add" v-if="info.isadd">添 加</el-button>
+        <el-button type="primary" @click="add" v-if="info.isadd"
+          >添 加</el-button
+        >
         <el-button type="primary" @click="update" v-else>修 改</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -105,14 +107,30 @@ export default {
 
       this.user.img = file;
     },
-    add() {
-      reqCateAdd(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert(res.data.msg);
-          this.cancel();
-          this.empty();
-          this.$emit("init");
+    //验证cate
+    changeCate() {
+      return new Promise((resolve) => {
+        if (this.user.pid === "") {
+          errorAlert("上级分类不能为空");
+          return;
         }
+
+        if (this.user.catename === "") {
+          errorAlert("名称不能为空");
+          return;
+        }
+      });
+    },
+    add() {
+      this.changeCate().then(() => {
+        reqCateAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert(res.data.msg);
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        });
       });
     },
     getOne(id) {
@@ -126,16 +144,18 @@ export default {
         }
       });
     },
-    update(){
-      reqCateEdit(this.user).then((res)=>{
-        if(res.data.code==200){
-          successAlert(res.data.msg)
-          this.cancel()
-          this.empty()
-          this.$emit("init")
-        }
-      })
-    }
+    update() {
+      this.changeCate().then(() => {
+        reqCateEdit(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert(res.data.msg);
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        });
+      });
+    },
   },
 };
 </script>

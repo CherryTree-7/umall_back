@@ -3,6 +3,10 @@ import qs from 'qs'
 import axios from 'axios'
 import { errorAlert } from './alert'
 
+import store from "../store"
+
+import router from "../router"
+
 //开发环境使用
 let baseUrl = "/api"
 Vue.prototype.$pre = "http://localhost:3000"
@@ -11,6 +15,14 @@ Vue.prototype.$pre = "http://localhost:3000"
 //生产环境使用 打包
 // let baseUrl=""
 // Vue.prototype.$pre=""
+
+//请求拦截:设置请求头
+axios.interceptors.request.use(config=>{
+    if(config.url!==baseUrl+"/api/userlogin"){
+        config.headers.authorization=store.state.userInfo.token
+    }
+    return config
+})
 
 
 //响应拦截
@@ -22,6 +34,13 @@ axios.interceptors.response.use(res => {
     // 统一处理数组是null的情况
     if (!res.data.list) {
         res.data.list = []
+    }
+    //掉线处理
+    if(res.data.msg==="登录已过期或访问权限受限"){
+        //清除用户登录的信息 userInfo
+        store.dispatch("changeUser",{})
+        //跳到登录页面
+        router.push("/login")
     }
     console.group("本次请求地址是：" + res.config.url)
     console.log(res);
@@ -37,7 +56,14 @@ function dataToFormData(user) {
     }
     return data
 }
-
+//登录请求
+export const reqLogin = (user) => {
+    return axios({
+        url: baseUrl + "/api/userlogin",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
 // 菜单管理
 // 菜单添加接口
 export const reqMenuAdd = (user) => {
@@ -315,3 +341,86 @@ export const reqBannerDel = (id) => {
     })
 }
 //<-------------------------------banner轮播图管理 End-------------------------------------->
+// <---------------------------------商品管理Start-------------------------------------->
+//商品添加
+export const reqGoodsAdd = (user) => {
+    return axios({
+        url: baseUrl + "/api/goodsadd",
+        method: "post",
+        data: dataToFormData(user)
+    })
+}
+//商品列表
+export const reqGoodsList = (obj) => {
+    return axios({
+        url: baseUrl + "/api/goodslist",
+        method: "get",
+        params: obj
+    })
+}
+//商品获取(一条)
+export const reqGoodsInfo = (id) => {
+    return axios({
+        url: baseUrl + "/api/goodsinfo",
+        method: "get",
+        params: id
+    })
+}
+//商品修改
+export const reqGoodsEdit = (user) => {
+    return axios({
+        url: baseUrl + "/api/goodsedit",
+        method: "post",
+        data: dataToFormData(user)
+    })
+}
+//商品删除
+export const reqGoodsDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/goodsdelete",
+        method: "post",
+        data: qs.stringify(id)
+    })
+}
+// <---------------------------------商品管理End---------------------------------------->
+//<---------------------------------秒杀活动Start---------------------------------------->
+// 限时秒杀添加
+export const reqSeckAdd = (user) =>{
+    return axios({
+        url:baseUrl+"/api/seckadd",
+        method:"post",
+        data:qs.stringify(user)
+    })
+}
+// 限时秒杀列表
+export const reqSeckList = () =>{
+    return axios({
+        url:baseUrl+"/api/secklist",
+        method:"get"
+    })
+}
+// 限时秒杀获取（一条）
+export const reqSeckInfo = (id) =>{
+    return axios({
+        url:baseUrl+"/api/seckinfo",
+        method:"get",
+        params:id
+    })
+}
+// 限时秒杀修改
+export const reqSeckEdit = (user) =>{
+    return axios({
+        url:baseUrl+"/api/seckedit",
+        method:"post",
+        data:qs.stringify(user)
+    })
+}
+// 限时秒杀删除
+export const reqSeckDel = (id) =>{
+    return axios({
+        url:baseUrl+"/api/seckdelete",
+        method:"post",
+        data:qs.stringify(id)
+    })
+}
+//<-----------------------------------秒杀活动End---------------------------------------->

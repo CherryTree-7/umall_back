@@ -1,5 +1,6 @@
 <template>
   <el-dialog :title="info.isadd ? '添加' : '编辑'" :visible.sync="info.isshow">
+    {{ user }}
     <el-form :model="user">
       <el-form-item label="规格名称" :label-width="formLabelWidth">
         <el-input v-model="user.specsname"></el-input>
@@ -36,7 +37,7 @@
 </template>
 <script>
 import { mapActions } from "vuex";
-import { successAlert } from "../../../utils/alert";
+import { errorAlert, successAlert } from "../../../utils/alert";
 import { reqSpeceEdit, reqSpecsAdd, reqSpecsInfo } from "../../../utils/http";
 export default {
   props: ["info"],
@@ -72,16 +73,35 @@ export default {
     delArr(index) {
       this.attrsArr.splice(index, 1);
     },
+    //验证specs
+    changeSpecs() {
+      return new Promise((resolve) => {
+        if (this.user.specsname === "") {
+          errorAlert("规格名称不能为空");
+          return
+        }
+
+        if (this.attrsArr.some((item) => item.value === "")) {
+          errorAlert("请填写所有的规格属性");
+          return;
+        }
+        resolve();
+      });
+    },
     //   点击添加
     add() {
-      this.user.attrs = JSON.stringify(this.attrsArr.map((item) => item.value));
-      reqSpecsAdd(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert(res.data.msg);
-          this.cancel();
-          this.empty();
-          this.reqList();
-        }
+      this.changeSpecs().then(() => {
+        this.user.attrs = JSON.stringify(
+          this.attrsArr.map((item) => item.value)
+        );
+        reqSpecsAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert(res.data.msg);
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
       });
     },
     getOne(id) {
@@ -94,7 +114,7 @@ export default {
       });
     },
     update() {
-      this.user.attrs = JSON.stringify(this.attrsArr.map(item=>item.value))
+      this.user.attrs = JSON.stringify(this.attrsArr.map((item) => item.value));
       reqSpeceEdit(this.user).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
